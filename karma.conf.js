@@ -100,7 +100,7 @@ const SL_LAUNCHERS = {
 module.exports = function(config) {
   config.set({
     basePath: '',
-    frameworks: ['tap'],
+    frameworks: ['mocha'],
     files: [
       'test/unit/index.js',
     ],
@@ -128,9 +128,6 @@ module.exports = function(config) {
 
     webpack: Object.assign({}, webpackConfig, {
       devtool: 'inline-source-map',
-      node: {
-        fs: 'empty',
-      },
       module: Object.assign({}, webpackConfig.module, {
         // Cover source files when not debugging tests. Otherwise, omit coverage instrumenting to get
         // uncluttered source maps.
@@ -140,6 +137,11 @@ module.exports = function(config) {
           loader: 'isparta',
         } : undefined]).filter(Boolean),
       }),
+      resolve: {
+        alias: {
+          tape: path.resolve(__dirname, 'test/unit/fake-tape.js'),
+        },
+      },
     }),
 
     webpackMiddleware: {
@@ -163,10 +165,8 @@ module.exports = function(config) {
 };
 
 // Block-scoped declarations are not supported in Node 4.
-/* eslint-disable no-var */
-
 function determineBrowsers() {
-  var browsers = USING_SL ? Object.keys(SL_LAUNCHERS) : ['Chrome'];
+  const browsers = USING_SL ? Object.keys(SL_LAUNCHERS) : ['Chrome'];
   if (USING_TRAVISCI && !IS_SECURE) {
     console.warn(
       'NOTICE: Falling back to firefox browser, as travis-ci JWT addon is currently not working ' +

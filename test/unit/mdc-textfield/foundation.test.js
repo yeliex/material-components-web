@@ -166,7 +166,6 @@ const setupBlurTest = () => {
   const {foundation, mockAdapter} = setupTest();
   let blur;
   td.when(mockAdapter.registerInputBlurHandler(td.matchers.isA(Function))).thenDo((handler) => {
-    console.log('got handler', handler);
     blur = handler;
   });
   const nativeInput = {
