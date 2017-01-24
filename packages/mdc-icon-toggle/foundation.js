@@ -14,18 +14,27 @@
  * limitations under the License.
  */
 
-import {MDCFoundation} from '@material/base';
+import MDCFoundation from '@material/base/foundation.js';
+// eslint-disable-next-line no-unused-vars
+import MDCIconToggleAdapter from './adapter';
 
-const ROOT = 'mdc-icon-toggle';
-
+/**
+ * @extends {MDCFoundation<!MDCIconToggleAdapter>}
+ */
 export default class MDCIconToggleFoundation extends MDCFoundation {
+  /**
+   * @return {!Object<string, string>}
+   */
   static get cssClasses() {
     return {
-      ROOT,
-      DISABLED: `${ROOT}--disabled`,
+      ROOT: 'mdc-icon-toggle',
+      DISABLED: 'mdc-icon-toggle--disabled',
     };
   }
 
+  /**
+   * @return {!Object<string, string>}
+   */
   static get strings() {
     return {
       DATA_TOGGLE_ON: 'data-toggle-on',
@@ -36,37 +45,53 @@ export default class MDCIconToggleFoundation extends MDCFoundation {
     };
   }
 
+  /**
+   * @return {!MDCIconToggleAdapter}
+   */
   static get defaultAdapter() {
-    return {
-      addClass: (/* className: string */) => {},
-      removeClass: (/* className: string */) => {},
-      registerInteractionHandler: (/* type: string, handler: EventListener */) => {},
-      deregisterInteractionHandler: (/* type: string, handler: EventListener */) => {},
-      setText: (/* text: string */) => {},
-      getTabIndex: () => /* number */ 0,
-      setTabIndex: (/* tabIndex: number */) => {},
-      getAttr: (/* name: string */) => /* string */ '',
-      setAttr: (/* name: string, value: string */) => {},
-      rmAttr: (/* name: string */) => {},
-      notifyChange: (/* evtData: {isOn: boolean} */) => {},
-    };
+    return /** @type {!MDCIconToggleAdapter} */ ({
+      addClass: () => {},
+      removeClass: () => {},
+      registerInteractionHandler: () => {},
+      deregisterInteractionHandler: () => {},
+      setText: () => {},
+      getTabIndex: () => 0,
+      setTabIndex: () => {},
+      getAttr: () => '',
+      setAttr: () => {},
+      rmAttr: () => {},
+      notifyChange: () => {},
+    });
   }
 
+  /**
+   * @param {!MDCIconToggleAdapter} adapter
+   */
   constructor(adapter) {
     super(Object.assign(MDCIconToggleFoundation.defaultAdapter, adapter));
+    /** @private {boolean} */
     this.on_ = false;
+    /** @private {boolean} */
     this.disabled_ = false;
+    /** @private {number} */
     this.savedTabIndex_ = -1;
+    // TODO: better types
+    /** @private {?Object} */
     this.toggleOnData_ = null;
+    /** @private {?Object} */
     this.toggleOffData_ = null;
+    /** @private {function(): void} */
     this.clickHandler_ = () => this.toggleFromEvt_();
+    /** @private {boolean} */
     this.isHandlingKeydown_ = false;
+    /** @private {function(!KeyboardEvent): void} */
     this.keydownHandler_ = (evt) => {
       if (isSpace(evt)) {
         this.isHandlingKeydown_ = true;
         return evt.preventDefault();
       }
     };
+    /** @private {function(!KeyboardEvent): void} */
     this.keyupHandler_ = (evt) => {
       if (isSpace(evt)) {
         this.isHandlingKeydown_ = false;
@@ -94,16 +119,21 @@ export default class MDCIconToggleFoundation extends MDCFoundation {
     this.adapter_.deregisterInteractionHandler('keyup', this.keyupHandler_);
   }
 
+  /** @private */
   toggleFromEvt_() {
     this.toggle();
     const {on_: isOn} = this;
     this.adapter_.notifyChange({isOn});
   }
 
+  /** @return {boolean} */
   isOn() {
     return this.on_;
   }
 
+  /**
+   * @param {boolean=} isOn
+   */
   toggle(isOn = !this.on_) {
     this.on_ = isOn;
 
@@ -131,18 +161,27 @@ export default class MDCIconToggleFoundation extends MDCFoundation {
     }
   }
 
+  /**
+   * @param {string} dataAttr
+   * @return {!Object} todo better type
+   * @private
+   */
   parseJsonDataAttr_(dataAttr) {
     const val = this.adapter_.getAttr(dataAttr);
     if (!val) {
       return {};
     }
-    return JSON.parse(val);
+    return /** @type {!Object} */ (JSON.parse(val));
   }
 
+  /** @return {boolean} */
   isDisabled() {
     return this.disabled_;
   }
 
+  /**
+   * @param {boolean} isDisabled
+   */
   setDisabled(isDisabled) {
     this.disabled_ = isDisabled;
 
@@ -150,22 +189,29 @@ export default class MDCIconToggleFoundation extends MDCFoundation {
     const {ARIA_DISABLED} = MDCIconToggleFoundation.strings;
 
     if (this.disabled_) {
-      this.savedTabIndex = this.adapter_.getTabIndex();
+      this.savedTabIndex_ = this.adapter_.getTabIndex();
       this.adapter_.setTabIndex(-1);
       this.adapter_.setAttr(ARIA_DISABLED, 'true');
       this.adapter_.addClass(DISABLED);
     } else {
-      this.adapter_.setTabIndex(this.savedTabIndex);
+      this.adapter_.setTabIndex(this.savedTabIndex_);
       this.adapter_.rmAttr(ARIA_DISABLED);
       this.adapter_.removeClass(DISABLED);
     }
   }
 
+  /**
+   * @return {boolean}
+   */
   isKeyboardActivated() {
     return this.isHandlingKeydown_;
   }
 }
 
+/**
+ * @param {!{key: string, keyCode: number}} data
+ * @return {boolean}
+ */
 function isSpace({key, keyCode}) {
-  return key && key === 'Space' || keyCode === 32;
+  return Boolean(key && key === 'Space' || keyCode === 32);
 }

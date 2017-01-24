@@ -17,6 +17,7 @@
 export const ROOT = 'mdc-ripple';
 export const UPGRADED = `${ROOT}-upgraded`;
 
+/** @const {!Object<string, string>} */
 export const cssClasses = {
   // Ripple is a special case where the "root" component is really a "mixin" of sorts,
   // given that it's an 'upgrade' to an existing component. That being said it is the root
@@ -30,6 +31,7 @@ export const cssClasses = {
   FG_UNBOUNDED_DEACTIVATION: `${UPGRADED}--foreground-unbounded-deactivation`,
 };
 
+/** @const {!Object<string, string>} */
 export const strings = {
   VAR_SURFACE_WIDTH: `--${ROOT}-surface-width`,
   VAR_SURFACE_HEIGHT: `--${ROOT}-surface-height`,
@@ -45,6 +47,7 @@ export const strings = {
   VAR_FG_TRANSLATE_END: `--${ROOT}-fg-translate-end`,
 };
 
+/** @const {!Object<string, number>} */
 export const numbers = {
   FG_TRANSFORM_DELAY_MS: 80,
   OPACITY_DURATION_DIVISOR: 3,

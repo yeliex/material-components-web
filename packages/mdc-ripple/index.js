@@ -14,15 +14,25 @@
  * limitations under the License.
  */
 
-import {MDCComponent} from '@material/base';
+import MDCComponent from '@material/base/component.js';
 import MDCRippleFoundation from './foundation';
+import MDCRippleAdapter from './adapter'; // eslint-disable-line no-unused-vars
 import {supportsCssVariables, getMatchesProperty} from './util';
 
+/** @const {string} */
 const MATCHES = getMatchesProperty(HTMLElement.prototype);
 
 export {MDCRippleFoundation};
 
+/**
+ * @extends {MDCComponent<!MDCRippleFoundation>}
+ */
 export class MDCRipple extends MDCComponent {
+  /**
+   * @param {!Element} root
+   * @param {{isUnbounded: (boolean|undefined)}=} opts
+   * @return {!MDCRipple}
+   */
   static attachTo(root, {isUnbounded = undefined} = {}) {
     const ripple = new MDCRipple(root);
     // Only override unbounded behavior if option is explicitly specified
@@ -32,27 +42,49 @@ export class MDCRipple extends MDCComponent {
     return ripple;
   }
 
+  /**
+   * @param {!MDCComponent} instance
+   * @return {!MDCRippleAdapter}
+   */
   static createAdapter(instance) {
     return {
       browserSupportsCssVars: () => supportsCssVariables(window),
-      isUnbounded: () => instance.unbounded,
-      isSurfaceActive: () => instance.root_[MATCHES](':active'),
-      addClass: (className) => instance.root_.classList.add(className),
-      removeClass: (className) => instance.root_.classList.remove(className),
-      registerInteractionHandler: (evtType, handler) => instance.root_.addEventListener(evtType, handler),
-      deregisterInteractionHandler: (evtType, handler) => instance.root_.removeEventListener(evtType, handler),
+      isUnbounded: () => /** @type {?} */ (instance).unbounded,
+      isSurfaceActive: () => instance.root[MATCHES](':active'),
+      addClass: (className) => instance.root.classList.add(className),
+      removeClass: (className) => instance.root.classList.remove(className),
+      registerInteractionHandler: (evtType, handler) => instance.root.addEventListener(evtType, handler),
+      deregisterInteractionHandler: (evtType, handler) => instance.root.removeEventListener(evtType, handler),
       registerResizeHandler: (handler) => window.addEventListener('resize', handler),
       deregisterResizeHandler: (handler) => window.removeEventListener('resize', handler),
-      updateCssVariable: (varName, value) => instance.root_.style.setProperty(varName, value),
-      computeBoundingRect: () => instance.root_.getBoundingClientRect(),
+      updateCssVariable: (varName, value) => instance.root.style.setProperty(varName, value),
+      computeBoundingRect: () => instance.root.getBoundingClientRect(),
       getWindowPageOffset: () => ({x: window.pageXOffset, y: window.pageYOffset}),
     };
   }
 
+  /**
+   * @param {...?} args
+   */
+  constructor(...args) {
+    super(...args);
+    /** @private {boolean} */
+    this.unbounded_ = false;
+
+    /** @type {boolean} */
+    this.unbounded;
+  }
+
+  /**
+   * @return {boolean}
+   */
   get unbounded() {
     return this.unbounded_;
   }
 
+  /**
+   * @param {boolean} unbounded
+   */
   set unbounded(unbounded) {
     const {UNBOUNDED} = MDCRippleFoundation.cssClasses;
     this.unbounded_ = Boolean(unbounded);
@@ -71,6 +103,9 @@ export class MDCRipple extends MDCComponent {
     this.foundation_.deactivate();
   }
 
+  /**
+   * @return {!MDCRippleFoundation}
+   */
   getDefaultFoundation() {
     return new MDCRippleFoundation(MDCRipple.createAdapter(this));
   }

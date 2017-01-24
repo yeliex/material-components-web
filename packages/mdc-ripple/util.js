@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
+import MDCRippleAdapter from './adapter'; // eslint-disable-line no-unused-vars
+
+/**
+ * @param {!Window} windowObj
+ * @return {boolean}
+ */
 export function supportsCssVariables(windowObj) {
   const supportsFunctionPresent = windowObj.CSS && typeof windowObj.CSS.supports === 'function';
   if (!supportsFunctionPresent) {
-    return;
+    return false;
   }
 
   const explicitlySupportsCssVars = windowObj.CSS.supports('--css-vars', 'yes');
@@ -30,12 +36,22 @@ export function supportsCssVariables(windowObj) {
   return explicitlySupportsCssVars || weAreFeatureDetectingSafari10plus;
 }
 
+/**
+ * @param {!Object} HTMLElementPrototype
+ * @return {string}
+ */
 export function getMatchesProperty(HTMLElementPrototype) {
-  return [
+  return /** @type {string} */ ([
     'webkitMatchesSelector', 'msMatchesSelector', 'matches',
-  ].filter((p) => p in HTMLElementPrototype).pop();
+  ].filter((p) => p in HTMLElementPrototype).pop());
 }
 
+/**
+ * @param {!MDCRippleAdapter} rippleAdapter
+ * @param {string} cls
+ * @param {string} endEvent
+ * @return {function(): void}
+ */
 export function animateWithClass(rippleAdapter, cls, endEvent) {
   let cancelled = false;
   const cancel = () => {
@@ -51,6 +67,12 @@ export function animateWithClass(rippleAdapter, cls, endEvent) {
   return cancel;
 }
 
+/**
+ * @param {!Event} ev
+ * @param {!{x: number, y: number}} pageOffset
+ * @param {!ClientRect} clientRect
+ * @return {!{left: number, top: number}}
+ */
 export function getNormalizedEventCoords(ev, pageOffset, clientRect) {
   const {x, y} = pageOffset;
   const documentX = x + clientRect.left;
@@ -60,9 +82,11 @@ export function getNormalizedEventCoords(ev, pageOffset, clientRect) {
   let normalizedY;
   // Determine touch point relative to the ripple container.
   if (ev.type === 'touchend') {
+    ev = /** @type {!TouchEvent} */ (ev);
     normalizedX = ev.changedTouches[0].pageX - documentX;
     normalizedY = ev.changedTouches[0].pageY - documentY;
   } else {
+    ev = /** @type {!PointerEvent} */ (ev);
     normalizedX = ev.pageX - documentX;
     normalizedY = ev.pageY - documentY;
   }

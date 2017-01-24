@@ -14,30 +14,56 @@
  * limitations under the License.
  */
 
-import {MDCComponent} from '@material/base';
-import {MDCRipple, MDCRippleFoundation} from '@material/ripple';
+import MDCComponent from '@material/base/component.js';
+import {MDCRipple} from '@material/ripple';
+import MDCRippleFoundation from '@material/ripple/foundation.js';
+import MDCRippleAdapter from '@material/ripple/adapter.js'; // eslint-disable-line
 
 import MDCIconToggleFoundation from './foundation';
+// eslint-disable-next-line no-unused-vars
+import MDCIconToggleAdapter from './adapter';
 
 export {MDCIconToggleFoundation};
 
+/**
+ * @extends {MDCComponent<!MDCIconToggleFoundation>}
+ */
 export class MDCIconToggle extends MDCComponent {
+  /**
+   * @param {!Element} root
+   * @return {!MDCIconToggle}
+   */
   static attachTo(root) {
     return new MDCIconToggle(root);
   }
 
+  /**
+   * @param {...?} args
+   */
   constructor(...args) {
     super(...args);
+
+    /** @type {boolean} */
+    this.on;
+    /** @type {boolean} */
+    this.disabled;
+    /** @private {!MDCRipple} */
     this.ripple_ = this.initRipple_();
+    /** @private {!Element} */
+    this.iconEl_;
   }
 
+  /**
+   * @private
+   */
   get iconEl_() {
     const {iconInnerSelector: sel} = this.root_.dataset;
     return sel ? this.root_.querySelector(sel) : this.root_;
   }
 
+  /** @private */
   initRipple_() {
-    const adapter = Object.assign(MDCRipple.createAdapter(this), {
+    const adapter = /** @type {!MDCRippleAdapter} */ (Object.assign(MDCRipple.createAdapter(this), {
       isUnbounded: () => true,
       isSurfaceActive: () => this.foundation_.isKeyboardActivated(),
       computeBoundingRect: () => {
@@ -52,7 +78,7 @@ export class MDCIconToggle extends MDCComponent {
           bottom: left + dim,
         };
       },
-    });
+    }));
     const foundation = new MDCRippleFoundation(adapter);
     return new MDCRipple(this.root_, foundation);
   }
@@ -62,8 +88,9 @@ export class MDCIconToggle extends MDCComponent {
     super.destroy();
   }
 
+  /** @return {!MDCIconToggleFoundation} */
   getDefaultFoundation() {
-    return new MDCIconToggleFoundation({
+    return new MDCIconToggleFoundation(/** @type {!MDCIconToggleAdapter} */ ({
       addClass: (className) => this.iconEl_.classList.add(className),
       removeClass: (className) => this.iconEl_.classList.remove(className),
       registerInteractionHandler: (type, handler) => this.root_.addEventListener(type, handler),
@@ -79,7 +106,7 @@ export class MDCIconToggle extends MDCComponent {
       setAttr: (name, value) => this.root_.setAttribute(name, value),
       rmAttr: (name) => this.root_.removeAttribute(name),
       notifyChange: (evtData) => this.emit('MDCIconToggle:change', evtData),
-    });
+    }));
   }
 
   initialSyncWithDOM() {
