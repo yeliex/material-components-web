@@ -17,20 +17,21 @@
 import MDCFoundation from './foundation';
 
 /**
+ * @abstract
  * @template T
  */
 export default class MDCComponent {
-  /**
-   * @param {!Element} root
-   * @return {!MDCComponent}
-   */
-  static attachTo(root) {
-    // Subclasses which extend MDCBase should provide an attachTo() method that takes a root element and
-    // returns an instantiated component with its root set to that element. Also note that in the cases of
-    // subclasses, an explicit foundation class will not have to be passed in; it will simply be initialized
-    // from getDefaultFoundation().
-    return new MDCComponent(root, new MDCFoundation());
-  }
+  // /**
+  //  * @param {!Element} root
+  //  * @return {!MDCComponent}
+  //  */
+  // static attachTo(root) {
+  //   // Subclasses which extend MDCBase should provide an attachTo() method that takes a root element and
+  //   // returns an instantiated component with its root set to that element. Also note that in the cases of
+  //   // subclasses, an explicit foundation class will not have to be passed in; it will simply be initialized
+  //   // from getDefaultFoundation().
+  //   return new MDCComponent(root, new MDCFoundation());
+  // }
 
   /**
    * @param {!Element} root
@@ -65,14 +66,12 @@ export default class MDCComponent {
   }
 
   /**
+   * Subclasses must override this method to return a properly configured foundation class for the
+   * component.
    * @return {T}
+   * @abstract
    */
-  getDefaultFoundation() {
-    // Subclasses must override this method to return a properly configured foundation class for the
-    // component.
-    throw new Error('Subclasses must override getDefaultFoundation to return a properly configured ' +
-      'foundation class');
-  }
+  getDefaultFoundation() {}
 
   initialSyncWithDOM() {
     // Subclasses should override this method if they need to perform work to synchronize with a host DOM

@@ -19,7 +19,7 @@ import MDCFoundation from '@material/base/foundation.js';
 import MDCIconToggleAdapter from './adapter';
 
 /**
- * @extends {MDCFoundation<!MDCIconToggleAdapter>}
+ * @final @extends {MDCFoundation<!MDCIconToggleAdapter>}
  */
 export default class MDCIconToggleFoundation extends MDCFoundation {
   /**

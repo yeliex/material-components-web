@@ -24,10 +24,11 @@ CMD="java -jar node_modules/google-closure-compiler/compiler.jar \
 --js $JS_SRCS \
 --language_out ECMASCRIPT5_STRICT \
 --dependency_mode STRICT \
---entry_point $CLOSURE_PKGDIR/mdc-icon-toggle/index \
+--entry_point $CLOSURE_PKGDIR/mdc-icon-toggle/CLOSURE_TEST \
 --js_module_root $CLOSURE_PKGDIR \
 --jscomp_off accessControls \
---checks_only
+--module_resolution LEGACY \
+--js_output_file $CLOSURE_PKGDIR/closure-test.js
 "
 echo "$CMD"
 $CMD
@@ -35,3 +36,26 @@ $CMD
 if [ $? -eq 0 ]; then
   echo 'Compilation successful!'
 fi
+
+echo "Creating test html harness"
+rm -fr $CLOSURE_PKGDIR/index.html
+cat >> $CLOSURE_PKGDIR/index.html <<EOF
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Closure Test</title>
+  </head>
+  <body>
+    <i class="mdc-icon-toggle material-icons" role="button" aria-pressed="false"
+       aria-label="Add to favorites" tabindex="0"
+       data-toggle-on='{"label": "Remove from favorites", "content": "favorite"}'
+       data-toggle-off='{"label": "Add to favorites", "content": "favorite_border"}'>
+      favorite_border
+    </i>
+    <script src="closure-test.js"></script>
+  </body>
+EOF
+
+echo "opening $CLOSURE_PKGDIR/index.html. Open the console when you get there."
+sleep 3
+open $CLOSURE_PKGDIR/index.html

@@ -53,7 +53,7 @@ let ActivationState; // eslint-disable-line no-unused-vars
 let UnboundedDeactivationInfo; // eslint-disable-line no-unused-vars
 
 /**
- * @extends {MDCFoundation<!MDCRippleAdapter>}
+ * @final @extends {MDCFoundation<!MDCRippleAdapter>}
  */
 export default class MDCRippleFoundation extends MDCFoundation {
   /**
@@ -204,7 +204,7 @@ export default class MDCRippleFoundation extends MDCFoundation {
   }
 
   /**
-   * @param {!Event} e
+   * @param {?Event} e
    * @private
    */
   activate_(e) {
@@ -275,7 +275,7 @@ export default class MDCRippleFoundation extends MDCFoundation {
   }
 
   /**
-   * @param {!Event} e
+   * @param {?Event} e
    * @private
    */
   deactivate_(e) {
@@ -286,7 +286,9 @@ export default class MDCRippleFoundation extends MDCFoundation {
     }
     // Programmatic deactivation.
     if (activationState.isProgrammatic) {
-      requestAnimationFrame(() => this.animateDeactivation_(null, Object.assign({}, activationState)));
+      requestAnimationFrame(
+        () => this.animateDeactivation_(null, /** @type {!ActivationState} */(Object.assign({}, activationState)))
+      );
       this.activationState_ = this.defaultActivationState_();
       return;
     }
@@ -316,7 +318,7 @@ export default class MDCRippleFoundation extends MDCFoundation {
   }
 
   /**
-   * @param {!Event} e
+   * @param {?Event} e
    * @param {!ActivationState} state
    * @private
    */
@@ -389,15 +391,16 @@ export default class MDCRippleFoundation extends MDCFoundation {
   }
 
   /**
-   * @param {!Event} e
+   * @param {?Event} e
    * @param {boolean} isPointerEvent
    * @private
    */
   animateBoundedDeactivation_(e, isPointerEvent) {
     let startPoint;
     if (isPointerEvent) {
+      // We know e is defined here because isPointerEvent is set to true
       startPoint = getNormalizedEventCoords(
-        e, this.adapter_.getWindowPageOffset(), this.adapter_.computeBoundingRect()
+        /** @type {!Event} */ (e), this.adapter_.getWindowPageOffset(), this.adapter_.computeBoundingRect()
       );
     } else {
       startPoint = {
@@ -500,7 +503,7 @@ export default class MDCRippleFoundation extends MDCFoundation {
     this.adapter_.updateCssVariable(VAR_SURFACE_HEIGHT, `${this.frame_.height}px`);
     this.adapter_.updateCssVariable(VAR_FG_SIZE, `${this.initialSize_}px`);
     this.adapter_.updateCssVariable(VAR_FG_UNBOUNDED_TRANSFORM_DURATION, `${this.xfDuration_}ms`);
-    this.adapter_.updateCssVariable(VAR_FG_SCALE, this.fgScale_);
+    this.adapter_.updateCssVariable(VAR_FG_SCALE, String(this.fgScale_));
 
     if (this.adapter_.isUnbounded()) {
       this.unboundedCoords_ = {

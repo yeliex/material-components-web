@@ -71,7 +71,7 @@ export function animateWithClass(rippleAdapter, cls, endEvent) {
  * @param {!Event} ev
  * @param {!{x: number, y: number}} pageOffset
  * @param {!ClientRect} clientRect
- * @return {!{left: number, top: number}}
+ * @return {!{x: number, y: number}}
  */
 export function getNormalizedEventCoords(ev, pageOffset, clientRect) {
   const {x, y} = pageOffset;

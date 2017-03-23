@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-/** @template T */
+/**
+ * @abstract
+ * @template T
+ */
 export default class MDCFoundation {
   /**
    * @return {!Object<string, string>}
@@ -61,11 +64,15 @@ export default class MDCFoundation {
     this.adapter_ = /** @type {!T} */ (adapter);
   }
 
-  init() {
-    // Subclasses should override this method to perform initialization routines (registering events, etc.)
-  }
+  /**
+   * Subclasses should override this method to perform initialization routines (registering events, etc.)
+   * @abstract
+   */
+  init() {}
 
-  destroy() {
-    // Subclasses should override this method to perform de-initialization routines (de-registering events, etc.)
-  }
+  /**
+   * Subclasses should override this method to perform de-initialization routines (de-registering events, etc.)
+   * @abstract
+   */
+  destroy() {}
 }
