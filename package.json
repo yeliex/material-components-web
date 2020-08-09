@@ -38,7 +38,7 @@
     "camel-case": "^3.0.0",
     "chai": "^3.5.0",
     "cli-table": "^0.3.1",
-    "codecov": "^2.1.0",
+    "codecov": "^3.7.2",
     "cp-file": "^4.1.0",
     "cross-env": "^4.0.0",
     "css-loader": "^0.28.0",
